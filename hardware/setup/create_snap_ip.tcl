@@ -462,8 +462,8 @@ if { $create_ddr4_ad9v3 == "TRUE" } {
   open_example_project -in_process -force -dir $ip_dir     [get_ips ddr4sdram] >> $log_file
 }
 
-#HBM controller(AD9H3)
-if { $create_hbm_ad9h3 == "TRUE" } {
+#HBM controller(AD9H3/AD9H7)
+if { ($create_hbm_ad9h3 == "TRUE") || ($create_hbm_ad9h7 == "TRUE") } {
   puts "                        generating axi_hbm_dwidth_converter ......"
   create_ip -name axi_dwidth_converter -vendor xilinx.com -library ip -version 2.1 -module_name axi_hbm_dwidth_converter -dir $ip_dir  >> $log_file
   set_property -dict [list CONFIG.PROTOCOL {AXI4}              \
