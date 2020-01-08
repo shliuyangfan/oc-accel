@@ -459,7 +459,6 @@ static double get_variance (double *bandwidth_array, uint32_t test_count, double
     uint32_t i;
     double variance_sum = 0;
     double variance;
-    double deviation;
     double bandwidth;
     double * ptr_bandwidth = (double*) bandwidth_array;
 
@@ -511,7 +510,6 @@ int main (int argc, char* argv[])
     int cmd;
     int rc = 1;
     uint32_t i;
-    uint64_t cir;
     uint32_t timeout = ACTION_WAIT_TIME;
     snap_action_flag_t attach_flags = 0;
     struct snap_action* act = NULL;
@@ -527,6 +525,8 @@ int main (int argc, char* argv[])
     uint32_t rblen      , wblen;    //burst length
     uint64_t rtotal_bytes, wtotal_bytes;
     uint64_t total_bytes;
+    uint32_t size_4KB = 4096;
+    uint32_t size_128MB = 134217728;
     FILE * file_target;
     FILE * file_expect;
     uint64_t time_used = 100;
@@ -702,23 +702,23 @@ int main (int argc, char* argv[])
 
     rtotal_bytes = (uint64_t)rnum * (uint64_t)rblen * (uint64_t)rwidth;
     wtotal_bytes = (uint64_t)wnum * (uint64_t)wblen * (uint64_t)wwidth;
-    VERBOSE0 ("Read total bytes is: %d\n", rtotal_bytes);
-    VERBOSE0 ("Write total bytes is: %d\n", wtotal_bytes);
+    VERBOSE0 ("Read total bytes is: %ld\n", rtotal_bytes);
+    VERBOSE0 ("Write total bytes is: %ld\n", wtotal_bytes);
 
     if(wrap_pattern == 0){
-        src_base = alloc_mem (4096, rtotal_bytes);
-        tgt_base = alloc_mem (4096, wtotal_bytes);
-        exp_buff = alloc_mem (4096, wtotal_bytes);
+        src_base = alloc_mem (size_4KB, rtotal_bytes);
+        tgt_base = alloc_mem (size_4KB, wtotal_bytes);
+        exp_buff = alloc_mem (size_4KB, wtotal_bytes);
         mem_init (src_base, init_rdata, rtotal_bytes);
         mem_init (exp_buff, init_wdata, wtotal_bytes);
         memset (tgt_base, 0, wtotal_bytes);
     } else {
-        src_base  = alloc_mem(134217728, 134217728); // src address must be 128MB alignment
-        tgt_base = alloc_mem (134217728, 134217728); // targer address must be 128MB alignment
-        exp_buff  = alloc_mem(134217728, 134217728);
-        mem_init (src_base, init_rdata, 134217728);
-        mem_init (exp_buff, init_wdata, 134217728);
-        memset (tgt_base, 0, 134217728);
+        src_base  = alloc_mem(size_128MB, size_128MB); // src address must be 128MB alignment
+        tgt_base = alloc_mem (size_128MB, size_128MB); // targer address must be 128MB alignment
+        exp_buff  = alloc_mem(size_128MB, size_128MB);
+        mem_init (src_base, init_rdata, size_128MB);
+        mem_init (exp_buff, init_wdata, size_128MB);
+        memset (tgt_base, 0, size_128MB);
     } 
 
     VERBOSE0 ("Source address is: %p\n", src_base);

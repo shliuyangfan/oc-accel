@@ -1,6 +1,5 @@
-/**
- * Copyright 2016, 2018 International Business Machines
- * Copyright 2016 Rackspace Inc.
+/*
+ * Copyright 2019 International Business Machines
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -686,6 +685,19 @@ int snap_action_is_idle (struct snap_action* action, int* rc)
     }
 
     return (action_data & ACTION_CONTROL_IDLE) == ACTION_CONTROL_IDLE;
+}
+
+int snap_action_wait_interrupt(struct snap_action *action, int *rc, int timeout)
+{
+    //uint32_t action_data = 0;
+    struct snap_card *card = (struct snap_card *)action;
+    //int _rc = hw_wait_irq(card, timeout, SNAP_ACTION_IRQ_NUM);
+    int _rc = hw_wait_irq(card, timeout /*, SNAP_ACTION_IRQ_NUM*/);
+
+    if (NULL != rc)
+        *rc = _rc;
+
+    return _rc;
 }
 
 int snap_action_completed (struct snap_action* action, int* rc, int timeout)

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2016, International Business Machines
+# Copyright 2019, International Business Machines
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ NAME=`basename $2`
 
 #Patch build date and git version
 SNAP_BUILD_DATE=`date "+%Y_%m%d_%H%M"`
-SNAP_RELEASE=`git describe --tags --always --match v[0-9]*.[0-9]*.[0-9]* | sed 's/.*\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.\([0-9][0-9]*\).*/\1 \2 \3/' | awk '{printf("%02X%02X_%02X\n",$1,$2,$3)}'`
+SNAP_RELEASE=`git describe --tags --always --match v[0-9]*.[0-9]*.[0-9]* | sed 's/.*\([0-9a-fA-F][0-9a-fA-F]\)\([0-9a-fA-F][0-9a-fA-F]\)\([0-9a-fA-F][0-9a-fA-F]\).*/\1 \2 \3/' | awk '{printf("%02X_%02X_%02X\n",$1,$2,$3)}'`
 GIT_DIST=`git describe --tags --always --match v[0-9]*.[0-9]*.[0-9]* | awk '{printf("%s-0\n",$1)}' | sed 's/.*\.[0-9][0-9]*-\([0-9][0-9]*\).*/\1/' | awk '{printf("%02X\n",$1)}'`
 if [ ! -z `echo $GIT_DIST | sed 's/[0-9A-F][0-9A-F]//'` ]; then GIT_DIST="FF"; fi
 GIT_SHA=`git log -1 --format="%H" | cut -c 1-4 | sed y/abcdef/ABCDEF/`"_"`git log -1 --format="%H" | cut -c 5-8 | sed y/abcdef/ABCDEF/`
@@ -48,8 +48,8 @@ sed -i "s/$SRC/$DST/" $1/$2
 #Patch HLS Action type and Release version
 #Be very careful, look for string ACTION_TYPE and RELEASE_LEVEL in $ACTION_ROOT
 if [ "$HLS_SUPPORT" == "TRUE" ]; then
-   HLS_ACTION_TYPE=`find $ACTION_ROOT -name *.[hH] | xargs grep "#define\s\+ACTION_TYPE" | cut -d "x" -f 2`
-   HLS_RELEASE_LEVEL=`find $ACTION_ROOT -name *.[hH] | xargs grep "#define\s\+RELEASE_LEVEL" | cut -d "x" -f 2`
+   HLS_ACTION_TYPE=`find $ACTION_ROOT -name *.[hH] | xargs grep "#define\s\+ACTION_TYPE" | awk -F"0x" '{print $2}'`
+   HLS_RELEASE_LEVEL=`find $ACTION_ROOT -name *.[hH] | xargs grep "#define\s\+RELEASE_LEVEL" | awk -F"0x" '{print $2}'`
    echo "ACTION_TYPE is $HLS_ACTION_TYPE, RELEASE_LEVEL is $HLS_RELEASE_LEVEL"
 
    SRC="define HLS_ACTION_TYPE 32'h.*"
